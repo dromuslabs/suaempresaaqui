@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área Administrativa - Agendamento Online</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Tela de Login -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🔐 Área Administrativa</h1>
+                <p>Faça login para acessar o painel</p>
+            </div>
+            
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="usuario">Usuário</label>
+                    <input type="text" id="usuario" name="usuario" required 
+                           placeholder="Digite seu usuário">
+                </div>
+                
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required 
+                           placeholder="Digite sua senha">
+                </div>
+                
+                <button type="submit" class="btn-primary">
+                    Entrar
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <button id="btn-voltar" class="btn-link">
+                    ← Voltar para agendamentos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Administrativo -->
+    <div id="admin-dashboard" class="admin-dashboard" style="display: none;">
+        <!-- Header do Dashboard -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>📊 Painel Administrativo</h1>
+                <div class="header-actions">
+                    <span id="user-info" class="user-info">Bem-vindo, Admin!</span>
+                    <button id="btn-logout" class="btn-logout">Sair</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navegação -->
+        <nav class="dashboard-nav">
+            <button class="nav-btn active" data-section="overview">📈 Visão Geral</button>
+            <button class="nav-btn" data-section="agendamentos">📅 Agendamentos</button>
+            <button class="nav-btn" data-section="horarios">🕐 Horários</button>
+            <button class="nav-btn" data-section="servicos">💼 Serviços</button>
+            <button class="nav-btn" data-section="profissionais">👥 Profissionais</button>
+            <button class="nav-btn" data-section="relatorios">📊 Relatórios</button>
+            <button class="nav-btn" data-section="configuracoes">⚙️ Configurações</button>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <main class="dashboard-content">
+            <!-- Seção: Visão Geral -->
+            <section id="section-overview" class="dashboard-section active">
+                <h2>Visão Geral</h2>
+                
+                <!-- Cards de Estatísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-content">
+                            <h3 id="total-agendamentos">0</h3>
+                            <p>Agendamentos Hoje</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-content">
+                            <h3 id="receita-hoje">R$ 0,00</h3>
+                            <p>Receita Hoje</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-content">
+                            <h3 id="receita-mes">R$ 0,00</h3>
+                            <p>Receita do Mês</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <h3 id="clientes-ativos">0</h3>
+                            <p>Clientes Ativos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>Agendamentos por Serviço</h3>
+                        <canvas id="chart-servicos"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Horários Mais Populares</h3>
+                        <canvas id="chart-horarios"></canvas>
+                    </div>
+                </div>
+
+                <!-- Próximos Agendamentos -->
+                <div class="upcoming-appointments">
+                    <h3>Próximos Agendamentos</h3>
+                    <div id="lista-proximos-agendamentos" class="appointments-list">
+                        <!-- Será preenchido via JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção: Agendamentos -->
+            <section id="section-agendamentos" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Gerenciar Agendamentos</h2>
+                    <div class="section-actions">
+                        <input type="date" id="filtro-data" class="filter-input">
+                        <select id="filtro-profissional" class="filter-select">
+                            <option value="">Todos os profissionais</option>
+                        </select>
+                        <button id="btn-refresh-agendamentos" class="btn-secondary">🔄 Atualizar</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table id="tabela-agendamentos" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Hora</th>
+                                <th>Cliente</th>
+                                <th>Telefone</th>
+                                <th>Serviço</th>
+                                <th>Profissional</th>
+                                <th>Valor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Será preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Seção: Horários -->
+            <section id="section-horarios" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Gerenciar Horários</h2>
+                    <button id="btn-add-horario" class="btn-primary">+ Adicionar Horário</button>
+                </div>
+                
+                <div class="horarios-grid">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </section>
+
+            <!-- Seção: Serviços -->
+            <section id="section-servicos" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Gerenciar Serviços</h2>
+                    <button id="btn-add-servico" class="btn-primary">+ Adicionar Serviço</button>
+                </div>
+                
+                <div class="table-container">
+                    <table id="tabela-servicos" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Serviço</th>
+                                <th>Duração</th>
+                                <th>Valor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Será preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Seção: Profissionais -->
+            <section id="section-profissionais" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Gerenciar Profissionais</h2>
+                    <button id="btn-add-profissional" class="btn-primary">+ Adicionar Profissional</button>
+                </div>
+                
+                <div class="table-container">
+                    <table id="tabela-profissionais" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Profissional</th>
+                                <th>Disponível De</th>
+                                <th>Disponível Até</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Será preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Seção: Relatórios -->
+            <section id="section-relatorios" class="dashboard-section">
+                <h2>Relatórios Financeiros</h2>
+                
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label>Período:</label>
+                        <select id="filtro-periodo">
+                            <option value="hoje">Hoje</option>
+                            <option value="semana">Esta Semana</option>
+                            <option value="mes">Este Mês</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" id="datas-personalizadas" style="display: none;">
+                        <label>De:</label>
+                        <input type="date" id="data-inicio">
+                        <label>Até:</label>
+                        <input type="date" id="data-fim">
+                    </div>
+                    
+                    <button id="btn-gerar-relatorio" class="btn-primary">Gerar Relatório</button>
+                </div>
+                
+                <div id="relatorio-resultado" class="relatorio-container">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </section>
+
+            <!-- Seção: Configurações -->
+            <section id="section-configuracoes" class="dashboard-section">
+                <h2>Configurações</h2>
+                
+                <div class="config-container">
+                    <div class="config-section">
+                        <h3>Alterar Senha</h3>
+                        <form id="form-alterar-senha">
+                            <div class="form-group">
+                                <label for="nova-senha">Nova Senha</label>
+                                <input type="password" id="nova-senha" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmar-senha">Confirmar Senha</label>
+                                <input type="password" id="confirmar-senha" required>
+                            </div>
+                            <button type="submit" class="btn-primary">Alterar Senha</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modais -->
+    <!-- Modal de Edição de Agendamento -->
+    <div id="modal-edit-agendamento" class="modal">
+        <div class="modal-content">
+            <h3>Editar Agendamento</h3>
+            <form id="form-edit-agendamento">
+                <div class="form-group">
+                    <label for="edit-nome">Nome</label>
+                    <input type="text" id="edit-nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-telefone">Telefone</label>
+                    <input type="tel" id="edit-telefone" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-email">Email</label>
+                    <input type="email" id="edit-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-data">Data</label>
+                    <input type="date" id="edit-data" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-hora">Hora</label>
+                    <input type="time" id="edit-hora" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Salvar</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('modal-edit-agendamento')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Adição de Serviço -->
+    <div id="modal-add-servico" class="modal">
+        <div class="modal-content">
+            <h3>Adicionar Serviço</h3>
+            <form id="form-add-servico">
+                <div class="form-group">
+                    <label for="add-servico-nome">Nome do Serviço</label>
+                    <input type="text" id="add-servico-nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-servico-duracao">Duração (minutos)</label>
+                    <input type="number" id="add-servico-duracao" min="15" step="15" value="60" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-servico-valor">Valor (R$)</label>
+                    <input type="number" id="add-servico-valor" min="0" step="0.01" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('modal-add-servico')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Adição de Profissional -->
+    <div id="modal-add-profissional" class="modal">
+        <div class="modal-content">
+            <h3>Adicionar Profissional</h3>
+            <form id="form-add-profissional">
+                <div class="form-group">
+                    <label for="add-prof-nome">Nome do Profissional</label>
+                    <input type="text" id="add-prof-nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-prof-de">Disponível De (opcional)</label>
+                    <input type="date" id="add-prof-de">
+                </div>
+                <div class="form-group">
+                    <label for="add-prof-ate">Disponível Até (opcional)</label>
+                    <input type="date" id="add-prof-ate">
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('modal-add-profissional')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/toast.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
+

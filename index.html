@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento Online</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Header com imagem de fundo -->
+    <header class="header-image">
+        <div class="header-overlay">
+            <h1>Agendamento Online</h1>
+            <p>Agende seu horário de forma rápida e fácil</p>
+        </div>
+        <!-- Botão discreto para área administrativa -->
+        <button id="admin-btn" class="admin-btn" title="Área Administrativa">⚙️</button>
+    </header>
+
+    <!-- Container principal -->
+    <main class="container">
+        <!-- Formulário de Agendamento -->
+        <div class="form-container">
+            <h2>Fazer Agendamento</h2>
+            
+            <form id="agendamento-form">
+                <!-- Telefone -->
+                <div class="form-group">
+                    <label for="telefone">Telefone *</label>
+                    <input type="tel" id="telefone" name="telefone" required 
+                           placeholder="(77) 99999-9999" maxlength="15">
+                </div>
+
+                <!-- Nome -->
+                <div class="form-group">
+                    <label for="nome">Nome Completo *</label>
+                    <input type="text" id="nome" name="nome" required 
+                           placeholder="Seu nome completo">
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="seu@email.com">
+                </div>
+
+                <!-- Profissional -->
+                <div class="form-group">
+                    <label for="profissional">Profissional *</label>
+                    <select id="profissional" name="profissional" required>
+                        <option value="">Selecione um profissional</option>
+                    </select>
+                </div>
+
+                <!-- Serviço -->
+                <div class="form-group">
+                    <label for="servico">Serviço *</label>
+                    <select id="servico" name="servico" required>
+                        <option value="">Selecione um serviço</option>
+                    </select>
+                </div>
+
+                <!-- Valor (readonly) -->
+                <div class="form-group">
+                    <label for="valor">Valor</label>
+                    <input type="text" id="valor" name="valor" readonly 
+                           placeholder="R$ 0,00">
+                </div>
+
+                <!-- Data -->
+                <div class="form-group">
+                    <label for="data">Data *</label>
+                    <input type="date" id="data" name="data" required>
+                </div>
+
+                <!-- Hora -->
+                <div class="form-group">
+                    <label for="hora">Horário *</label>
+                    <select id="hora" name="hora" required disabled>
+                        <option value="">Selecione primeiro a data e profissional</option>
+                    </select>
+                </div>
+
+                <!-- Botão de envio -->
+                <button type="submit" class="btn-primary" id="btn-agendar">
+                    Agendar Horário
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Modal de Confirmação -->
+    <div id="modal-confirmacao" class="modal">
+        <div class="modal-content">
+            <h3>Confirmar Agendamento</h3>
+            <div id="dados-agendamento"></div>
+            <div class="modal-buttons">
+                <button id="btn-confirmar" class="btn-primary">Confirmar</button>
+                <button id="btn-cancelar" class="btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Agendamentos Existentes -->
+    <div id="modal-agendamentos" class="modal">
+        <div class="modal-content">
+            <h3>Seus Agendamentos</h3>
+            <div id="lista-agendamentos"></div>
+            <div class="modal-buttons">
+                <button id="btn-fechar-agendamentos" class="btn-secondary">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Sucesso com WhatsApp -->
+    <div id="modal-sucesso" class="modal">
+        <div class="modal-content">
+            <h3>✅ Agendamento Realizado!</h3>
+            <p>Seu agendamento foi confirmado com sucesso!</p>
+            <div class="modal-buttons">
+                <button id="btn-whatsapp" class="btn-whatsapp">
+                    📱 Enviar pelo WhatsApp
+                </button>
+                <button id="btn-fechar-sucesso" class="btn-secondary">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/agendamento.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
+
